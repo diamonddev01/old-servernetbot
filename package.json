@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/servernetbot/version2/issues"
   },
-  "homepage": "https://github.com/servernetbot/version2#readme"
+  "homepage": "https://github.com/servernetbot/version2#readme",
+  "dependencies": {
+    "discord.js": "^14.0.3"
+  }
 }
