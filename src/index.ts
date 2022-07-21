@@ -5,6 +5,8 @@ import { Client } from './modified';
 import { Partials } from 'discord.js';
 import { readdirSync } from 'fs';
 
+import { token } from './__hdn/token';
+
 const client = new Client({
     intents: ['DirectMessages', 'Guilds', 'MessageContent', 'GuildWebhooks', 'GuildMessages'],
     partials: [Partials.Channel, Partials.Message, Partials.User]
@@ -36,4 +38,4 @@ for (const file of commandFiles) {
 }
 
 // Login
-client.login('ODM2MDI1ODcyMjgwMTkxMDI2.GZUIQd.C0cw7G43rPyx6I1lNbCcIrFO384gSNEQkX2F8Q');
+client.login(token);

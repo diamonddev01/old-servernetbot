@@ -5,6 +5,7 @@ const modified_1 = require("./modified");
 // Import normal deps
 const discord_js_1 = require("discord.js");
 const fs_1 = require("fs");
+const token_1 = require("./__hdn/token");
 const client = new modified_1.Client({
     intents: ['DirectMessages', 'Guilds', 'MessageContent', 'GuildWebhooks', 'GuildMessages'],
     partials: [discord_js_1.Partials.Channel, discord_js_1.Partials.Message, discord_js_1.Partials.User]
@@ -31,4 +32,4 @@ for (const file of commandFiles) {
     console.log(`[>] Loaded Command: ${command.name}`);
 }
 // Login
-client.login('ODM2MDI1ODcyMjgwMTkxMDI2.GZUIQd.C0cw7G43rPyx6I1lNbCcIrFO384gSNEQkX2F8Q');
+client.login(token_1.token);
