@@ -1,0 +1,23 @@
+{
+  "name": "servernet-bot",
+  "version": "2.0.0",
+  "description": "Servernet - A discord guild to guild communication bot",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "cd build && node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/servernetbot/version2.git"
+  },
+  "keywords": [
+    "Discord",
+    "bot"
+  ],
+  "author": "Diamonddev01",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/servernetbot/version2/issues"
+  },
+  "homepage": "https://github.com/servernetbot/version2#readme"
+}
