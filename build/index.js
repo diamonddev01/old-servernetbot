@@ -20,14 +20,13 @@ for (const file of eventFiles) {
     console.log(`[!] Loaded Event: ${eventName}`);
 }
 // Load commands
-let slashCommands = [];
 const commandFiles = (0, fs_1.readdirSync)('./commands/').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
     const { command } = require(`./commands/${file}`);
     client.commands.set(command.name, command);
-    let slash = command.slashCommandData;
+    let slash = command.slashEnabled;
     if (slash) {
-        slashCommands.push(slash);
+        client.addSlashCommand(command.slash);
     }
     console.log(`[>] Loaded Command: ${command.name}`);
 }

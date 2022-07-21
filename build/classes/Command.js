@@ -3,11 +3,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Command = void 0;
 class Command {
     constructor(construct) {
+        this.slashEnabled = false;
         const { name, description, help, aliases } = construct;
         this.name = name;
         this.description = description;
         this.help = help;
         this.aliases = aliases;
+        if (construct.slashEnabled) {
+            if (construct.SlashCommandData) {
+                construct.SlashCommandData.setName(this.name);
+                construct.SlashCommandData.setDescription(this.description);
+                this.slash = construct.SlashCommandData;
+                this.slashEnabled = true;
+            }
+        }
     }
     msg_run(client, message, args) {
         message.channel.send({ content: `Failed to run command ${this.name} - msg_run function not defined.` }); // Return an error code.
@@ -36,6 +45,14 @@ class Command {
     evt_msg(c, m, a) {
         try {
             this.msg_run(c, m, a);
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
+    evt_command(c, i) {
+        try {
+            this.int_run(c, i);
         }
         catch (e) {
             console.log(e);
