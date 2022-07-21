@@ -1,4 +1,4 @@
-import { CommandInteraction, Interaction, Message } from 'discord.js';
+import { ApplicationCommandOptionType, ApplicationCommandType, CommandInteraction, Interaction, Message, SlashCommandBuilder } from 'discord.js';
 import { Client } from '../modified';
 import {HelpMenus} from '../types/HelpMenus';
 
@@ -7,6 +7,8 @@ export class Command {
     description: string;
     help: HelpData;
     aliases?: string[];
+    slash?: SlashCommandBuilder;
+    slashEnabled: boolean = false;
 
     constructor(construct: Construct) {
         const { name, description, help, aliases } = construct;
@@ -14,6 +16,17 @@ export class Command {
         this.description = description;
         this.help = help;
         this.aliases = aliases;
+
+        if (construct.slashEnabled) {
+            if (construct.SlashCommandData) {
+                construct.SlashCommandData.setName(this.name);
+                construct.SlashCommandData.setDescription(this.description);
+
+                this.slash = construct.SlashCommandData;
+
+                this.slashEnabled = true;
+            }
+        }
     }
 
     msg_run(client: Client, message: Message, args: string[]): void {
@@ -57,6 +70,14 @@ export class Command {
         }
     }
 
+    evt_command(c: Client, i: CommandInteraction) {
+        try {
+            this.int_run(c, i);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     evt_interaction(c: Client, i: Interaction) {
         // TODO
     }
@@ -74,4 +95,6 @@ interface Construct {
     description: string;
     help: HelpData;
     aliases?: string[];
+    slashEnabled?: boolean;
+    SlashCommandData?: SlashCommandBuilder;
 }
