@@ -1,0 +1,49 @@
+{
+    "Allowed_Slot_1": [
+        "staff",
+        "developer",
+        "ex_staff",
+        "sr_mod",
+        "manager",
+        "moderator"
+    ],
+    "Allowed_Slot_2": [
+        "rk_b1",
+        "rk_b2",
+        "rk_b3",
+        "rk_s1",
+        "rk_s2",
+        "rk_s3",
+        "rk_g1",
+        "rk_g2",
+        "rk_g3",
+        "rk_p1",
+        "rk_p2",
+        "rk_p3"
+    ],
+    "Allowed_Slot_3": [
+        "milestone",
+        "m_100",
+        "m_250",
+        "m_500",
+        "m_750",
+        "m_1000",
+        "m_2500",
+        "m_5000",
+        "m_10000"
+    ],
+    "Allowed_Slot_4": [
+        "m_100",
+        "m_250",
+        "m_500",
+        "m_750",
+        "m_1000",
+        "m_2500",
+        "m_5000",
+        "m_10000",
+        "verified",
+        "partner",
+        "affiliate",
+        "contributor"
+    ]
+}
