@@ -1,9 +1,9 @@
-import { BaseGuildTextChannel, Channel } from "discord.js";
-import { Badge } from "./Badge";
+import { BaseGuildTextChannel } from "discord.js";
 import * as db from "quick.db";
 import { Warning } from "./Warn";
-import { WARN_TIMEOUT } from "../config";
+import { DEFAULT_FILTER_LEVEL, WARN_TIMEOUT } from "../config";
 import { makeID } from "../functions/idMaker";
+import { ChannelOptions } from "../types/channelOptions";
 
 export class NetworkChannel {
     Channel: BaseGuildTextChannel;
@@ -11,7 +11,7 @@ export class NetworkChannel {
     warnings?: Warning[];
     banned: boolean;
     ban?: Ban;
-    lastMessage;
+    options: ChannelOptions;
 
     constructor(channel: BaseGuildTextChannel) {
         this.Channel = channel;
@@ -22,7 +22,7 @@ export class NetworkChannel {
         this.warnings = data.warnings;
         this.banned = data.banned;
         this.ban = data.ban;
-        this.lastMessage = data.lastMessage;
+        this.options = data.options;
 
         this.saveChannelData();
     }
@@ -48,7 +48,11 @@ export class NetworkChannel {
             warnings: data.warnings,
             banned: data.banned || false,
             ban: <Ban>data.ban || undefined,
-            lastMessage: data.lastMessage
+            options: <ChannelOptions>data.options || {
+                id: this.id,
+                webhook: false,
+                filterLevel: DEFAULT_FILTER_LEVEL
+            } as ChannelOptions
         }
     }
 
@@ -71,7 +75,6 @@ export class NetworkChannel {
             warnings: warnings,
             banned: this.banned,
             ban: this.ban,
-            lastMessage: this.lastMessage
         }));
     }
 
@@ -110,7 +113,7 @@ interface ChannelData {
     warnings?: Warning[];
     banned: boolean;
     ban: Ban;
-    lastMessage: number;
+    options: ChannelOptions;
 }
 
 interface Ban {
