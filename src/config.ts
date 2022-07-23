@@ -16,3 +16,6 @@ export const WARN_ESCALATION_THRESHOLD = 3;
 // Logger settings
 export const LOGGER_ENABLED = true;
 export const LOGGER_CHANNEL = "925796503539294228";
+
+// Defaults
+export const DEFAULT_FILTER_LEVEL = 2;
