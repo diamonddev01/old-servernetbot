@@ -13,10 +13,14 @@ exports.Client = void 0;
 const discord_js_1 = require("discord.js");
 const rest_1 = require("@discordjs/rest");
 const token_1 = require("../__hdn/token");
+const logger_1 = require("../network/logger");
+const TimerSystem_1 = require("./TimerSystem");
 class Client extends discord_js_1.Client {
     constructor(options) {
         super(options);
         this.commands = new discord_js_1.Collection();
+        this.logger = new logger_1.Logger(this);
+        this.timer = new TimerSystem_1.TimeManager(this);
         this.slashCommands = [];
     }
     addSlashCommand(cmd) {

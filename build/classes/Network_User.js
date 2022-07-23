@@ -24,8 +24,10 @@ const Badge_1 = require("./Badge");
 const db = __importStar(require("quick.db"));
 const Warn_1 = require("./Warn");
 const config_1 = require("../config");
+const idMaker_1 = require("../functions/idMaker");
+const TimerSystem_1 = require("./TimerSystem");
 class NetworkUser {
-    constructor(user) {
+    constructor(user, client) {
         this.User = user;
         this.id = user.id;
         // Get some data about the user
@@ -36,6 +38,8 @@ class NetworkUser {
         this.warnings = data.warnings;
         this.banned = data.banned;
         this.ban = data.ban;
+        this.lastMessage = data.lastMessage;
+        this.clnt = client;
         this.saveUserData();
     }
     getUserData() {
@@ -66,7 +70,8 @@ class NetworkUser {
             messageCount: data.messageCount,
             warnings: data.warnings,
             banned: data.banned || false,
-            ban: data.ban || undefined
+            ban: data.ban || undefined,
+            lastMessage: data.lastMessage
         };
     }
     createUserData() {
@@ -75,6 +80,7 @@ class NetworkUser {
             badges: [],
             enabledBadges: [],
             messageCount: 0,
+            lastMessage: 0,
         }));
     }
     enableBadge(badgeID, slot) {
@@ -83,7 +89,7 @@ class NetworkUser {
             return false;
         }
         // Check if the user has the badge enabled
-        if (this.enabledBadges.some(badge => badge.id === badgeID)) {
+        if (this.enabledBadges.some((badge) => badge.id === badgeID)) {
             return false;
         }
         // Check the badge slots
@@ -92,6 +98,21 @@ class NetworkUser {
         }
         // Set the badge
         this.enabledBadges[slot - 1] = this.badges.find(badge => badge.id === badgeID);
+        // Save the data
+        this.saveUserData();
+        return true;
+    }
+    disableBadge(badgeID) {
+        // Check the user has the badge
+        if (!this.hasBadge(badgeID)) {
+            return false;
+        }
+        // Check if the user has the badge enabled
+        if (!this.enabledBadges.some((badge) => badge.id === badgeID)) {
+            return false;
+        }
+        // Remove the badge
+        this.enabledBadges[this.enabledBadges.findIndex((badge) => badge.id === badgeID)] = null;
         // Save the data
         this.saveUserData();
         return true;
@@ -113,19 +134,21 @@ class NetworkUser {
             messageCount: this.messageCount,
             warnings: warnings,
             banned: this.banned,
-            ban: this.ban
+            ban: this.ban,
+            lastMessage: this.lastMessage
         }));
     }
     sentMessage() {
         // Increase the message count
         this.messageCount++;
+        this.lastMessage = Date.now();
         // Save the data
         this.saveUserData();
     }
     // Reason is a string of why the warning was added | Moderator is the id of the moderator who applied the warning -> null if done by the automoderator
     warnUser(reason, moderator) {
         // Create a new warning
-        const warn = new Warn_1.Warning(this.id, reason, Date.now(), moderator ? moderator : undefined);
+        const warn = new Warn_1.Warning((0, idMaker_1.makeID)().toString(), reason, Date.now(), moderator ? moderator : undefined);
         // Add the warning to the user's warnings
         if (this.warnings === undefined) {
             this.warnings = [warn];
@@ -133,8 +156,15 @@ class NetworkUser {
         else {
             this.warnings.push(warn);
         }
+        this.clnt.logger.log_warn(warn, this);
+        const banUser = config_1.WARN_ESCALATION_ENABLED ? this.warnings.filter(warn => warn.time - Date.now() < config_1.WARN_TIMEOUT).length > config_1.WARN_ESCALATION_THRESHOLD : false;
+        if (banUser) {
+            this.banUser('Warning Escalation -- Warning escalation threshold reached.', moderator, true, config_1.WARN_ESCALATION_BAN_TIME);
+            return 2;
+        }
         // Save the data
         this.saveUserData();
+        return 1;
     }
     // Reason is a string of why the ban was added | Moderator is the id of the moderator who applied the ban -> null if done by the automoderator
     banUser(reason, moderator, temp, time) {
@@ -145,6 +175,19 @@ class NetworkUser {
             temp: temp,
             time: time
         };
+        this.clnt.logger.log_ban(this, this.ban.reason, this.ban.moderator ? this.ban.moderator : null);
+        if (this.ban.temp)
+            this.clnt.timer.addTimer(new TimerSystem_1.Timer(undefined, this.ban.time, (client, user) => {
+                user.unbanUser(null);
+            }, this));
+        this.saveUserData();
+    }
+    unbanUser(modID) {
+        if (!this.banned)
+            return;
+        this.banned = false;
+        this.ban = undefined;
+        this.clnt.logger.log_unban(this, modID);
         this.saveUserData();
     }
 }
