@@ -1,0 +1,1 @@
+export const WARN_TIMEOUT = 2629800000; // 1 month
