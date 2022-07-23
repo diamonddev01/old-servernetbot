@@ -11,8 +11,8 @@ export async function CustomNetworkMessage(client: Client, message: Message) {
     if (message.channel.type !== ChannelType.GuildText) return; // Fix compiler errors
     if (!message.guild) return; // Fix compiler errors
 
-    const user = new NetworkUser(message.author); // Create a new user object
-    const guild = new NetworkGuild(message.guild); // Create a new guild object
+    const user = new NetworkUser(message.author, client); // Create a new user object
+    const guild = new NetworkGuild(message.guild, client); // Create a new guild object
     const channel = new NetworkChannel(message.channel) // Create a new channel object
     const cnt = message.content; // Move the message content into the cnt variable
 
@@ -53,6 +53,8 @@ export async function CustomNetworkMessage(client: Client, message: Message) {
             // Return the 'error'
             message.channel.send({ content: `${message.author} You have been temp-banned for using a banned phrase. | Warning escalation policy mandates that after your x warn you must be temp-banned.` }).catch(console.log);
         }
+
+        return;
     }
 
     //NetworkSend(client, message, data, webhookOpts);
