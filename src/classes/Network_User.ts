@@ -12,7 +12,7 @@ export class NetworkUser {
     messageCount: number;
     warnings?: Warning[];
     banned: boolean;
-    ban: Ban;
+    ban?: Ban;
 
     constructor(user: User) {
         this.User = user;
@@ -24,6 +24,8 @@ export class NetworkUser {
         this.badges = data.badges;
         this.messageCount = data.messageCount;
         this.warnings = data.warnings;
+        this.banned = data.banned;
+        this.ban = data.ban;
 
         this.saveUserData();
     }
@@ -59,8 +61,8 @@ export class NetworkUser {
             enabledBadges: data.enabledBadges,
             messageCount: data.messageCount,
             warnings: data.warnings,
-            banned: data.banned,
-            ban: <Ban>data.ban
+            banned: data.banned || false,
+            ban: <Ban>data.ban || undefined
         }
     }
 
