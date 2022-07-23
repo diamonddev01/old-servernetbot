@@ -4,6 +4,7 @@ export interface ChannelOptions {
     wh?: wh;
     warns?: number;
     warnings?: Warn[];
+    filterLevel: number;
 }
 
 export interface wh {
