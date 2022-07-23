@@ -2,14 +2,18 @@ import { Client as c, Collection, ClientOptions, Routes, SlashCommandBuilder } f
 import { REST } from '@discordjs/rest';
 import { Command } from './Command';
 import { token } from '../__hdn/token';
+import { Logger } from '../network/logger';
 
 export class Client extends c {
     commands: Collection<string, Command>;
-    slashCommands: SlashCommandBuilder[]; // TODO
+    slashCommands: SlashCommandBuilder[];
+    logger: Logger;
 
     constructor(options: ClientOptions) {
         super(options);
         this.commands = new Collection();
+
+        this.logger = new Logger(this);
 
         this.slashCommands = [];
     }
