@@ -1,5 +1,5 @@
 // Import quick.db
-import { Client, GuildTextBasedChannel } from 'discord.js';
+import { AnyComponent, Attachment, Client, Component, Embed, GuildTextBasedChannel, Sticker } from 'discord.js';
 import * as db from 'quick.db';
 import { ChannelOptions, WebhookEnabledChannel } from '../types/channelOptions';
 import { Warn } from '../types/channelOptions';
@@ -7,7 +7,7 @@ import { makeID } from '../functions/idMaker';
 
 export async function NetworkSend(client: Client, message: string, otherOpts: OPTS, webhookOpts: WEBHOOKOPTS) {
     // Get the channels
-    const channels: ChannelOptions[] = <ChannelOptions[]>db.get('channels') || [];
+    const channels: ChannelOptions[] = <ChannelOptions[]>JSON.parse(db.get('channels')) || [];
 
     // Check if the channel is running webhooks or not
     for (let channel of channels) {
@@ -62,9 +62,9 @@ export async function NetworkSend(client: Client, message: string, otherOpts: OP
         }
 
         // Send the message to the channel
-        const c = <GuildTextBasedChannel>client.channels.cache.get(channel.id) || await <GuildTextBasedChannel>client.channels.fetch(channel.id).catch(console.log);
+        const c = client.channels.cache.get(channel.id) || await client.channels.fetch(channel.id).catch(console.log);
 
-        if (!c) {
+        if (!c  || !c.send) {
             // Create a new channel warning
             const warn: Warn = {
                 id: makeID().toString(),
@@ -108,4 +108,11 @@ export async function NetworkSend(client: Client, message: string, otherOpts: OP
 interface WEBHOOKOPTS {
     avatarURL?: string;
     username?: string;
+}
+
+interface OPTS {
+    embeds?: Embed[];
+    stickers?: Sticker[];
+    components?: Component<AnyComponent>[];
+    attatchments?: Attachment[];
 }
