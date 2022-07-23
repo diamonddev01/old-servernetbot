@@ -34,6 +34,8 @@ class NetworkUser {
         this.badges = data.badges;
         this.messageCount = data.messageCount;
         this.warnings = data.warnings;
+        this.banned = data.banned;
+        this.ban = data.ban;
         this.saveUserData();
     }
     getUserData() {
@@ -63,8 +65,8 @@ class NetworkUser {
             enabledBadges: data.enabledBadges,
             messageCount: data.messageCount,
             warnings: data.warnings,
-            banned: data.banned,
-            ban: data.ban
+            banned: data.banned || false,
+            ban: data.ban || undefined
         };
     }
     createUserData() {
