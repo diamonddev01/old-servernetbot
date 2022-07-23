@@ -2,7 +2,10 @@ import { User } from "discord.js";
 import { Badge } from "./Badge";
 import * as db from "quick.db";
 import { Warning } from "./Warn";
-import { WARN_TIMEOUT } from "../config";
+import { WARN_TIMEOUT, WARN_ESCALATION_BAN_TIME, WARN_ESCALATION_ENABLED, WARN_ESCALATION_THRESHOLD } from "../config";
+import { Client } from "./Client";
+import { makeID } from "../functions/idMaker";
+import { Timer } from "./TimerSystem";
 
 export class NetworkUser {
     User: User;
@@ -13,9 +16,10 @@ export class NetworkUser {
     warnings?: Warning[];
     banned: boolean;
     ban?: Ban;
-    lastMessage;
+    lastMessage: number;
+    clnt: Client;
 
-    constructor(user: User) {
+    constructor(user: User, client: Client) {
         this.User = user;
         this.id = user.id;
 
@@ -28,6 +32,8 @@ export class NetworkUser {
         this.banned = data.banned;
         this.ban = data.ban;
         this.lastMessage = data.lastMessage;
+
+        this.clnt = client;
 
         this.saveUserData();
     }
@@ -157,9 +163,9 @@ export class NetworkUser {
     }
 
     // Reason is a string of why the warning was added | Moderator is the id of the moderator who applied the warning -> null if done by the automoderator
-    warnUser(reason: string, moderator?: string | null) { 
+    warnUser(reason: string, moderator: string | null) { 
         // Create a new warning
-        const warn = new Warning(this.id, reason, Date.now(), moderator ? moderator : undefined);
+        const warn = new Warning(makeID().toString(), reason, Date.now(), moderator ? moderator : undefined);
 
         // Add the warning to the user's warnings
         if (this.warnings === undefined) {
@@ -168,8 +174,19 @@ export class NetworkUser {
             this.warnings.push(warn);
         }
 
+        this.clnt.logger.log_warn(warn, this);
+
+        const banUser = WARN_ESCALATION_ENABLED ? this.warnings.filter(warn => warn.time - Date.now() < WARN_TIMEOUT).length > WARN_ESCALATION_THRESHOLD : false;
+
+        if (banUser) {
+            this.banUser('Warning Escalation -- Warning escalation threshold reached.', moderator, true, WARN_ESCALATION_BAN_TIME);
+            return 2;
+        }
+
         // Save the data
         this.saveUserData();
+
+        return 1;
     }
 
     // Reason is a string of why the ban was added | Moderator is the id of the moderator who applied the ban -> null if done by the automoderator
@@ -182,6 +199,21 @@ export class NetworkUser {
             temp: temp,
             time: time
         }
+
+        this.clnt.logger.log_ban(this, this.ban.reason, this.ban.moderator ? this.ban.moderator : null);
+        if(this.ban.temp) this.clnt.timer.addTimer(new Timer(undefined, this.ban.time, (client: Client, user: NetworkUser) => {
+            user.unbanUser(null);
+        }, this));
+
+        this.saveUserData();
+    }
+
+    unbanUser(modID: string | null) {
+        if (!this.banned) return;
+        this.banned = false;
+        this.ban = undefined;
+
+        this.clnt.logger.log_unban(this, modID);
 
         this.saveUserData();
     }

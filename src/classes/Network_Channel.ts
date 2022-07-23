@@ -3,6 +3,7 @@ import { Badge } from "./Badge";
 import * as db from "quick.db";
 import { Warning } from "./Warn";
 import { WARN_TIMEOUT } from "../config";
+import { makeID } from "../functions/idMaker";
 
 export class NetworkChannel {
     Channel: BaseGuildTextChannel;
@@ -77,7 +78,7 @@ export class NetworkChannel {
     // Reason is a string of why the warning was added | Moderator is the id of the moderator who applied the warning -> null if done by the automoderator
     warnChannel(reason: string, moderator?: string | null) {
         // Create a new warning
-        const warn = new Warning(this.id, reason, Date.now(), moderator ? moderator : undefined);
+        const warn = new Warning(makeID().toString(), reason, Date.now(), moderator ? moderator : undefined);
 
         // Add the warning to the channel's warnings
         if (this.warnings === undefined) {

@@ -1,6 +1,8 @@
 import { Guild } from "discord.js";
 import { Badge } from "./Badge";
 import * as db from "quick.db";
+import { Client } from "./Client";
+import { Timer } from "./TimerSystem";
 
 export class NetworkGuild {
     guild: Guild;
@@ -10,10 +12,12 @@ export class NetworkGuild {
     id: string;
     enabledBadges: Badge[];
     badges: Badge[];
+    clnt: Client;
 
-    constructor(guild: Guild) {
+    constructor(guild: Guild, client: Client) {
         this.guild = guild;
         this.id = guild.id;
+        this.clnt = client;
 
         // Get some data about the guild
         const data = this.getGuildData();
@@ -139,6 +143,28 @@ export class NetworkGuild {
             temp: temp,
             time: time
         }
+
+        this.clnt.logger.log_gBan(this, reason, moderator);
+        if(this.ban.temp) this.clnt.timer.addTimer(
+            new Timer(
+                undefined,
+                time,
+                (client: Client, guild: NetworkGuild) => {
+                    guild.unbanGuild(null);
+                },
+                this
+            )
+        )
+
+        this.saveGuildData();
+    }
+
+    unbanGuild(modID: string | null) {
+        if (!this.banned) return;
+        this.banned = false;
+        this.ban = undefined;
+
+        this.clnt.logger.log_gUnban(this, modID);
 
         this.saveGuildData();
     }
