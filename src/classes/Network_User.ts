@@ -7,12 +7,13 @@ import { WARN_TIMEOUT } from "../config";
 export class NetworkUser {
     User: User;
     id: string;
-    enabledBadges: Badge[];
+    enabledBadges: Badge | null[];
     badges: Badge[];
     messageCount: number;
     warnings?: Warning[];
     banned: boolean;
     ban?: Ban;
+    lastMessage;
 
     constructor(user: User) {
         this.User = user;
@@ -26,6 +27,7 @@ export class NetworkUser {
         this.warnings = data.warnings;
         this.banned = data.banned;
         this.ban = data.ban;
+        this.lastMessage = data.lastMessage;
 
         this.saveUserData();
     }
@@ -62,7 +64,8 @@ export class NetworkUser {
             messageCount: data.messageCount,
             warnings: data.warnings,
             banned: data.banned || false,
-            ban: <Ban>data.ban || undefined
+            ban: <Ban>data.ban || undefined,
+            lastMessage: data.lastMessage
         }
     }
 
@@ -72,6 +75,7 @@ export class NetworkUser {
             badges: [],
             enabledBadges: [],
             messageCount: 0,
+            lastMessage: 0,
         }));
     }
 
@@ -82,7 +86,7 @@ export class NetworkUser {
         }
 
         // Check if the user has the badge enabled
-        if (this.enabledBadges.some(badge => badge.id === badgeID)) {
+        if (this.enabledBadges.some((badge: Badge) => badge.id === badgeID)) {
             return false;
         }
 
@@ -93,6 +97,26 @@ export class NetworkUser {
 
         // Set the badge
         this.enabledBadges[slot - 1] = this.badges.find(badge => badge.id === badgeID);
+
+        // Save the data
+        this.saveUserData();
+
+        return true;
+    }
+
+    disableBadge(badgeID: string) {
+        // Check the user has the badge
+        if (!this.hasBadge(badgeID)) {
+            return false;
+        }
+
+        // Check if the user has the badge enabled
+        if (!this.enabledBadges.some((badge: Badge) => badge.id === badgeID)) {
+            return false;
+        }
+
+        // Remove the badge
+        this.enabledBadges[this.enabledBadges.findIndex((badge: Badge) => badge.id === badgeID)] = null;
 
         // Save the data
         this.saveUserData();
@@ -118,13 +142,15 @@ export class NetworkUser {
             messageCount: this.messageCount,
             warnings: warnings,
             banned: this.banned,
-            ban: this.ban
+            ban: this.ban,
+            lastMessage: this.lastMessage
         }));
     }
 
     sentMessage() {
         // Increase the message count
         this.messageCount++;
+        this.lastMessage = Date.now();
 
         // Save the data
         this.saveUserData();
@@ -168,6 +194,7 @@ interface UserData {
     warnings?: Warning[];
     banned: boolean;
     ban: Ban;
+    lastMessage: number;
 }
 
 interface Ban {
