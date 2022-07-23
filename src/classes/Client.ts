@@ -3,17 +3,20 @@ import { REST } from '@discordjs/rest';
 import { Command } from './Command';
 import { token } from '../__hdn/token';
 import { Logger } from '../network/logger';
+import { TimeManager } from './TimerSystem';
 
 export class Client extends c {
     commands: Collection<string, Command>;
     slashCommands: SlashCommandBuilder[];
     logger: Logger;
+    timer: TimeManager;
 
     constructor(options: ClientOptions) {
         super(options);
         this.commands = new Collection();
 
         this.logger = new Logger(this);
+        this.timer = new TimeManager(this);
 
         this.slashCommands = [];
     }
