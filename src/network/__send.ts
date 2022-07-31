@@ -5,7 +5,7 @@ import { ChannelOptions, WebhookEnabledChannel } from '../types/channelOptions';
 import { Warn } from '../types/channelOptions';
 import { makeID } from '../functions/idMaker';
 
-export async function NetworkSend(client: Client, message: string, otherOpts: OPTS, webhookOpts: WEBHOOKOPTS) {
+export async function NetworkSend(client: Client, message: m, otherOpts: OPTS, webhookOpts: WEBHOOKOPTS, priOptions?: PRIOPTIONS) {
     // Get the channels
     const channels: ChannelOptions[] = <ChannelOptions[]>JSON.parse(db.get('channels')) || [];
 
@@ -33,11 +33,38 @@ export async function NetworkSend(client: Client, message: string, otherOpts: OP
                 continue;
             };
 
+            if (priOptions && priOptions?.limit_Level && priOptions?.limit_Level > channel.filterLevel) {
+                webhook.send({
+                    content: priOptions.limit_Exceeded_string_wh || '<msg filtered>',
+                    ...webhookOpts.filtered
+                }).catch(e => {
+                    console.error(e);
+
+                    // Create a new channel warning
+                    const warn: Warn = {
+                        id: makeID().toString(),
+                        reason: 'Webhook failed to send message',
+                        time: Date.now(),
+                        type: 'WebhookSendFail'
+                    };
+
+                    // Add the warning to the channel
+                    const CWarns = channel.warnings || [];
+                    CWarns.push(warn);
+
+                    // Update the channel
+                    channel.warnings = CWarns;
+                    channel.warns = CWarns.length;
+                });
+
+                continue;
+            }
+
             // Send the message
             webhook.send({
-                content: message,
+                content: message.wh,
                 ...otherOpts,
-                ...webhookOpts
+                ...webhookOpts.norm
             }).catch(e => {
                 console.error(e);
 
@@ -80,8 +107,34 @@ export async function NetworkSend(client: Client, message: string, otherOpts: OP
             continue;
         };
 
+        if (priOptions && priOptions?.limit_Level && priOptions?.limit_Level > channel.filterLevel) {
+            c.send({
+                content: priOptions.limit_Exceeded_string || '<msg filtered>'
+            }).catch((e) => {
+                console.error(e);
+
+                // Create a new channel warning
+                const warn: Warn = {
+                    id: makeID().toString(),
+                    reason: 'Channel failed to send message',
+                    time: Date.now(),
+                    type: 'ChannelSendFail'
+                };
+
+                // Add the warning to the channel
+                const CWarns = channel.warnings || [];
+                CWarns.push(warn);
+
+                // Update the channel
+                channel.warnings = CWarns;
+                channel.warns = CWarns.length;
+            });
+
+            continue;
+        }
+
         c.send({
-            content: message,
+            content: message.ch,
             ...otherOpts
         }).catch((e) => {
             console.error(e);
@@ -106,6 +159,11 @@ export async function NetworkSend(client: Client, message: string, otherOpts: OP
 }
 
 interface WEBHOOKOPTS {
+    filtered: WEBHOOKOPTS_N;
+    norm: WEBHOOKOPTS_N;
+}
+
+interface WEBHOOKOPTS_N {
     avatarURL?: string;
     username?: string;
 }
@@ -115,4 +173,15 @@ interface OPTS {
     stickers?: Sticker[];
     components?: Component<AnyComponent>[];
     attatchments?: Attachment[];
+}
+
+interface PRIOPTIONS {
+    limit_Level?: number;
+    limit_Exceeded_string?: string;
+    limit_Exceeded_string_wh?: string;
+}
+
+interface m {
+    wh: string;
+    ch: string;
 }
