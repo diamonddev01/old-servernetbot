@@ -7,6 +7,7 @@ export const SLOWMODE_TIME = 3000; // 3 seconds
 export const AUTOMOD_ENABLED = true;
 export const AUTOMOD_MAX_LENGTH = 2000;
 export const AUTOMOD_DEFINE_LINK = ["http://", "https://", ".com", ".gg", ".app", ".chat", ".org", ".dev", ".ru"];
+export const AUTOMOD_MESSAGES_FOR_MEDIA = 100;
 
 // Warning escalation settings
 export const WARN_ESCALATION_ENABLED = true;
