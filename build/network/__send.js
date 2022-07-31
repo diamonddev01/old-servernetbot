@@ -31,7 +31,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NetworkSend = void 0;
 const db = __importStar(require("quick.db"));
 const idMaker_1 = require("../functions/idMaker");
-function NetworkSend(client, message, otherOpts, webhookOpts) {
+function NetworkSend(client, message, otherOpts, webhookOpts, priOptions) {
     return __awaiter(this, void 0, void 0, function* () {
         // Get the channels
         const channels = JSON.parse(db.get('channels')) || [];
@@ -55,8 +55,27 @@ function NetworkSend(client, message, otherOpts, webhookOpts) {
                     continue;
                 }
                 ;
+                if (priOptions && (priOptions === null || priOptions === void 0 ? void 0 : priOptions.limit_Level) && (priOptions === null || priOptions === void 0 ? void 0 : priOptions.limit_Level) > channel.filterLevel) {
+                    webhook.send(Object.assign({ content: priOptions.limit_Exceeded_string_wh || '<msg filtered>' }, webhookOpts.filtered)).catch(e => {
+                        console.error(e);
+                        // Create a new channel warning
+                        const warn = {
+                            id: (0, idMaker_1.makeID)().toString(),
+                            reason: 'Webhook failed to send message',
+                            time: Date.now(),
+                            type: 'WebhookSendFail'
+                        };
+                        // Add the warning to the channel
+                        const CWarns = channel.warnings || [];
+                        CWarns.push(warn);
+                        // Update the channel
+                        channel.warnings = CWarns;
+                        channel.warns = CWarns.length;
+                    });
+                    continue;
+                }
                 // Send the message
-                webhook.send(Object.assign(Object.assign({ content: message }, otherOpts), webhookOpts)).catch(e => {
+                webhook.send(Object.assign(Object.assign({ content: message.wh }, otherOpts), webhookOpts.norm)).catch(e => {
                     console.error(e);
                     // Create a new channel warning
                     const warn = {
@@ -90,7 +109,28 @@ function NetworkSend(client, message, otherOpts, webhookOpts) {
                 continue;
             }
             ;
-            c.send(Object.assign({ content: message }, otherOpts)).catch((e) => {
+            if (priOptions && (priOptions === null || priOptions === void 0 ? void 0 : priOptions.limit_Level) && (priOptions === null || priOptions === void 0 ? void 0 : priOptions.limit_Level) > channel.filterLevel) {
+                c.send({
+                    content: priOptions.limit_Exceeded_string || '<msg filtered>'
+                }).catch((e) => {
+                    console.error(e);
+                    // Create a new channel warning
+                    const warn = {
+                        id: (0, idMaker_1.makeID)().toString(),
+                        reason: 'Channel failed to send message',
+                        time: Date.now(),
+                        type: 'ChannelSendFail'
+                    };
+                    // Add the warning to the channel
+                    const CWarns = channel.warnings || [];
+                    CWarns.push(warn);
+                    // Update the channel
+                    channel.warnings = CWarns;
+                    channel.warns = CWarns.length;
+                });
+                continue;
+            }
+            c.send(Object.assign({ content: message.ch }, otherOpts)).catch((e) => {
                 console.error(e);
                 // Create a new channel warning
                 const warn = {

@@ -97,7 +97,7 @@ class NetworkUser {
             return false;
         }
         // Set the badge
-        this.enabledBadges[slot - 1] = this.badges.find(badge => badge.id === badgeID);
+        this.enabledBadges[slot - 1] = this.badges.find(badge => badge.id === badgeID) || null;
         // Save the data
         this.saveUserData();
         return true;
@@ -124,8 +124,8 @@ class NetworkUser {
     saveUserData() {
         var _a;
         // Turn the badges into an array
-        const badges = this.enabledBadges.map(badge => badge.JSON);
-        const enabledbadges = this.enabledBadges.map(badge => badge.JSON);
+        const badges = this.enabledBadges.map(badge => badge === null || badge === void 0 ? void 0 : badge.JSON) || [];
+        const enabledbadges = this.enabledBadges.map(badge => badge === null || badge === void 0 ? void 0 : badge.JSON) || [];
         const warnings = (_a = this.warnings) === null || _a === void 0 ? void 0 : _a.map(warn => warn.JSON);
         // Save the user's data to the database
         db.set('user-' + this.id, JSON.stringify({
@@ -176,7 +176,7 @@ class NetworkUser {
             time: time
         };
         this.clnt.logger.log_ban(this, this.ban.reason, this.ban.moderator ? this.ban.moderator : null);
-        if (this.ban.temp)
+        if (this.ban.temp && this.ban.time)
             this.clnt.timer.addTimer(new TimerSystem_1.Timer(undefined, this.ban.time, (client, user) => {
                 user.unbanUser(null);
             }, this));
