@@ -1,4 +1,5 @@
 const json = require('./badge_data.json');
+import * as MAP from '../maps/badge_mappings';
 
 export class Badge {
     name: string;
@@ -18,7 +19,7 @@ export class Badge {
         this.allowedSlots = [1, 2, 3, 4].filter(i => this.slots[i - 1]);
     }
 
-    get JSON() {
+    get JSON(): JSON_EXP {
         return {
             name: this.name,
             id: this.id,
@@ -26,4 +27,15 @@ export class Badge {
             slot: this.slot
         }
     }
+
+    get emoji(): string {
+        return MAP[this.id];
+    }
+}
+
+interface JSON_EXP {
+    name: string;
+    id: string;
+    description: string;
+    slot?: number;
 }
