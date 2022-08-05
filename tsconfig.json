@@ -100,5 +100,6 @@
   },
   "exclude": [
     "locales", // We will add a way to do locales later.
+    "scripts", // Scripts are stuff I use when testing the bot, these use deno so dont need node compilation
   ]
 }
