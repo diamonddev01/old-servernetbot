@@ -38,7 +38,7 @@ export class Command {
     }
 
     int_other(client: Client, interaction: Interaction) {
-        // Used to parse data for button presses or other items like that.
+        // IGNORE
         return;
     }
 
@@ -79,7 +79,11 @@ export class Command {
     }
 
     evt_interaction(c: Client, i: Interaction) {
-        // TODO
+        try {
+            this.int_other(c, i);
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
 
