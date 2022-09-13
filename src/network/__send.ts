@@ -1,9 +1,10 @@
 // Import quick.db
-import { AnyComponent, Attachment, Client, Component, Embed, GuildTextBasedChannel, Sticker } from 'discord.js';
+import { Client } from 'discord.js';
 import * as db from 'quick.db';
 import { ChannelOptions, WebhookEnabledChannel } from '../types/channelOptions';
 import { Warn } from '../types/channelOptions';
 import { makeID } from '../functions/idMaker';
+import { WEBHOOKOPTS, OPTS, PRIOPTIONS, m} from '../types/NetworkSendData'
 
 export async function NetworkSend(client: Client, message: m, otherOpts: OPTS, webhookOpts: WEBHOOKOPTS, priOptions?: PRIOPTIONS) {
     // Get the channels
@@ -156,32 +157,4 @@ export async function NetworkSend(client: Client, message: m, otherOpts: OPTS, w
             channel.warns = CWarns.length;
         });
     }
-}
-
-interface WEBHOOKOPTS {
-    filtered: WEBHOOKOPTS_N;
-    norm: WEBHOOKOPTS_N;
-}
-
-interface WEBHOOKOPTS_N {
-    avatarURL?: string;
-    username?: string;
-}
-
-interface OPTS {
-    embeds?: Embed[];
-    stickers?: Sticker[];
-    components?: Component<AnyComponent>[];
-    attatchments?: Attachment[];
-}
-
-interface PRIOPTIONS {
-    limit_Level?: number;
-    limit_Exceeded_string?: string;
-    limit_Exceeded_string_wh?: string;
-}
-
-interface m {
-    wh: string;
-    ch: string;
 }
