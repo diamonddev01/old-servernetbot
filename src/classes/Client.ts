@@ -2,7 +2,7 @@ import { Client as c, Collection, ClientOptions, Routes, SlashCommandBuilder } f
 import { REST } from '@discordjs/rest';
 import { Command } from './Command';
 import { token } from '../__hdn/token';
-import { Logger } from '../network/logger';
+import { Logger } from './logger';
 import { TimeManager } from './TimerSystem';
 
 export class Client extends c {
