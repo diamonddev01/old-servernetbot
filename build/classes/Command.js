@@ -25,7 +25,7 @@ class Command {
         interaction.reply({ content: `Failed to run command ${this.name} - int_run function not defined`, ephemeral: true }); // Return an error code
     }
     int_other(client, interaction) {
-        // Used to parse data for button presses or other items like that.
+        // IGNORE
         return;
     }
     // Allow the command to redefine what happens on a message
@@ -59,7 +59,12 @@ class Command {
         }
     }
     evt_interaction(c, i) {
-        // TODO
+        try {
+            this.int_other(c, i);
+        }
+        catch (e) {
+            console.log(e);
+        }
     }
 }
 exports.Command = Command;

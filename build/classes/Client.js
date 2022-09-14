@@ -13,7 +13,7 @@ exports.Client = void 0;
 const discord_js_1 = require("discord.js");
 const rest_1 = require("@discordjs/rest");
 const token_1 = require("../__hdn/token");
-const logger_1 = require("../network/logger");
+const logger_1 = require("./logger");
 const TimerSystem_1 = require("./TimerSystem");
 class Client extends discord_js_1.Client {
     constructor(options) {
