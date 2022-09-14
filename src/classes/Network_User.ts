@@ -6,6 +6,7 @@ import { WARN_TIMEOUT, WARN_ESCALATION_BAN_TIME, WARN_ESCALATION_ENABLED, WARN_E
 import { Client } from "./Client";
 import { makeID } from "../functions/idMaker";
 import { Timer } from "./TimerSystem";
+import { UserLogger } from "./subLoggers/userLogger";
 
 export class NetworkUser {
     User: User;
@@ -18,6 +19,7 @@ export class NetworkUser {
     ban?: Ban;
     lastMessage: number;
     clnt: Client;
+    logger: UserLogger;
 
     constructor(user: User, client: Client) {
         this.User = user;
@@ -34,6 +36,8 @@ export class NetworkUser {
         this.lastMessage = data.lastMessage;
 
         this.clnt = client;
+
+        this.logger = this.clnt.logger.user;
 
         this.saveUserData();
     }
@@ -174,7 +178,7 @@ export class NetworkUser {
             this.warnings.push(warn);
         }
 
-        this.clnt.logger.log_warn(warn, this);
+        this.logger.warn(warn, this);
 
         const banUser = WARN_ESCALATION_ENABLED ? this.warnings.filter(warn => warn.time - Date.now() < WARN_TIMEOUT).length > WARN_ESCALATION_THRESHOLD : false;
 
@@ -200,7 +204,7 @@ export class NetworkUser {
             time: time
         }
 
-        this.clnt.logger.log_ban(this, this.ban.reason, this.ban.moderator ? this.ban.moderator : null);
+        this.logger.ban(this, this.ban.reason, this.ban.moderator ? this.ban.moderator : null);
         if(this.ban.temp && this.ban.time) this.clnt.timer.addTimer(new Timer(undefined, this.ban.time, (client: Client, user: NetworkUser) => {
             user.unbanUser(null);
         }, this));
@@ -213,7 +217,7 @@ export class NetworkUser {
         this.banned = false;
         this.ban = undefined;
 
-        this.clnt.logger.log_unban(this, modID);
+        this.logger.unban(this, modID);
 
         this.saveUserData();
     }

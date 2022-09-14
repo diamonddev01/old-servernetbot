@@ -3,6 +3,7 @@ import { Badge } from "./Badge";
 import * as db from "quick.db";
 import { Client } from "./Client";
 import { Timer } from "./TimerSystem";
+import { GuildLogger } from './subLoggers/guildLogger';
 
 export class NetworkGuild {
     guild: Guild;
@@ -13,6 +14,7 @@ export class NetworkGuild {
     enabledBadges: Badge[];
     badges: Badge[];
     clnt: Client;
+    logger: GuildLogger;
 
     constructor(guild: Guild, client: Client) {
         this.guild = guild;
@@ -27,6 +29,8 @@ export class NetworkGuild {
         this.messageCount = data.messageCount;
         this.enabledBadges = data.enabledBadges;
         this.badges = data.badges;
+
+        this.logger = client.logger.guild;
     }
 
     getGuildData(): GuildData {
@@ -144,7 +148,7 @@ export class NetworkGuild {
             time: time
         }
 
-        this.clnt.logger.log_gBan(this, reason, moderator);
+        this.logger.ban(this, reason, moderator);
         if(this.ban.temp) this.clnt.timer.addTimer(
             new Timer(
                 undefined,
@@ -164,7 +168,7 @@ export class NetworkGuild {
         this.banned = false;
         this.ban = undefined;
 
-        this.clnt.logger.log_gUnban(this, modID);
+        this.logger.unban(this, modID);
 
         this.saveGuildData();
     }
