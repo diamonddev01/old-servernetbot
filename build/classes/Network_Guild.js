@@ -35,6 +35,7 @@ class NetworkGuild {
         this.messageCount = data.messageCount;
         this.enabledBadges = data.enabledBadges;
         this.badges = data.badges;
+        this.logger = client.logger.guild;
     }
     getGuildData() {
         // Get the user's data from the database
@@ -129,7 +130,7 @@ class NetworkGuild {
             temp: temp,
             time: time
         };
-        this.clnt.logger.log_gBan(this, reason, moderator);
+        this.logger.ban(this, reason, moderator);
         if (this.ban.temp)
             this.clnt.timer.addTimer(new TimerSystem_1.Timer(undefined, time, (client, guild) => {
                 guild.unbanGuild(null);
@@ -141,7 +142,7 @@ class NetworkGuild {
             return;
         this.banned = false;
         this.ban = undefined;
-        this.clnt.logger.log_gUnban(this, modID);
+        this.logger.unban(this, modID);
         this.saveGuildData();
     }
 }

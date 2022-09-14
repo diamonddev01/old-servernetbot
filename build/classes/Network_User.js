@@ -40,6 +40,7 @@ class NetworkUser {
         this.ban = data.ban;
         this.lastMessage = data.lastMessage;
         this.clnt = client;
+        this.logger = this.clnt.logger.user;
         this.saveUserData();
     }
     getUserData() {
@@ -156,7 +157,7 @@ class NetworkUser {
         else {
             this.warnings.push(warn);
         }
-        this.clnt.logger.log_warn(warn, this);
+        this.logger.warn(warn, this);
         const banUser = config_1.WARN_ESCALATION_ENABLED ? this.warnings.filter(warn => warn.time - Date.now() < config_1.WARN_TIMEOUT).length > config_1.WARN_ESCALATION_THRESHOLD : false;
         if (banUser) {
             this.banUser('Warning Escalation -- Warning escalation threshold reached.', moderator, true, config_1.WARN_ESCALATION_BAN_TIME);
@@ -175,7 +176,7 @@ class NetworkUser {
             temp: temp,
             time: time
         };
-        this.clnt.logger.log_ban(this, this.ban.reason, this.ban.moderator ? this.ban.moderator : null);
+        this.logger.ban(this, this.ban.reason, this.ban.moderator ? this.ban.moderator : null);
         if (this.ban.temp && this.ban.time)
             this.clnt.timer.addTimer(new TimerSystem_1.Timer(undefined, this.ban.time, (client, user) => {
                 user.unbanUser(null);
@@ -187,7 +188,7 @@ class NetworkUser {
             return;
         this.banned = false;
         this.ban = undefined;
-        this.clnt.logger.log_unban(this, modID);
+        this.logger.unban(this, modID);
         this.saveUserData();
     }
 }
