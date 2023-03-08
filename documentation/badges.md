@@ -1,1 +1,0 @@
-# All badges/IDs are available in the `badges.json` file.
