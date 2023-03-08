@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "outDir": "dist",
+        "rootDir": "src",
+        "target": "ES6",
+        "module": "Node16",
+        "lib": ["ES2017", "ES7", "ES6"],
+        "strict": true,
+        "esModuleInterop": true
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
