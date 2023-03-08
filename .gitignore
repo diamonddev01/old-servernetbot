@@ -1,6 +1,12 @@
+# Runtime and Dependency
 node_modules
 dist
-*.hide.*
 
 # config files
 config.ts
+
+# Hidden files (good for hiding tokens & secret values)
+*.hide.*
+
+# Database & UserInfo
+database
