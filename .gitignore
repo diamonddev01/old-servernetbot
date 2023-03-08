@@ -1,3 +1,6 @@
 node_modules
 dist
 *.hide.*
+
+# config files
+config.ts
