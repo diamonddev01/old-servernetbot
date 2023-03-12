@@ -9,4 +9,4 @@ config.ts
 *hide*
 
 # Database & UserInfo
-database
+database/db.sqlite
