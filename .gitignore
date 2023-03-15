@@ -7,6 +7,7 @@ config.ts
 
 # Hidden files (good for hiding tokens & secret values)
 *hide*
+tests
 
 # Database & UserInfo
 database/db.sqlite
