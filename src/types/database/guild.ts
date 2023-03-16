@@ -19,7 +19,7 @@ export interface GUILD_META_DATA {
     }
     guild_moderation_status?: {
         moderation_level?: number;
-        moderation_ovverides?: [string, boolean][];
+        moderation_overrides?: [string, boolean][];
     }
 }
 
