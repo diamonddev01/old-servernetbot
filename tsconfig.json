@@ -18,6 +18,7 @@
     "exclude": [
         "node_modules",
         "dist",
-        "tests"
+        "tests",
+        "src/config.example.ts"
     ]
 }
