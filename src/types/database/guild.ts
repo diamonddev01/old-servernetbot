@@ -5,7 +5,7 @@ export interface DBGuild {
     partnership_status: number; // See subnotes 3
     moderations: string[]; // See subnotes 4
     messages: number; // Allows the tracking of guild message numbers
-    metadata?: GUILD_META_DATA;
+    metadata: GUILD_META_DATA;
 }
 
 export interface GUILD_META_DATA {
@@ -19,7 +19,7 @@ export interface GUILD_META_DATA {
     }
     guild_moderation_status?: {
         moderation_level?: number;
-        moderation_ovverides: Map<string, boolean>;
+        moderation_ovverides?: Map<string, boolean>;
     }
 }
 
