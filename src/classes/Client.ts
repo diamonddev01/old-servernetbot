@@ -2,10 +2,12 @@ import { Client as DiscordClient, ClientOptions, Collection, SlashCommandBuilder
 import {REST} from '@discordjs/rest'
 import { Command } from "./Command";
 import { devGuild, slashDevMode } from "../config";
+import { Database } from "./Database";
 
 export class Client extends DiscordClient {
     public commands: Collection<string, Command> = new Collection();
     private slashCommands: SlashCommandBuilder[] = [];
+    public db: Database = new Database(this);
 
     constructor(options: ClientOptions) {
         super(options);
