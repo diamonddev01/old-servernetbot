@@ -1,6 +1,6 @@
 type connection_methods_and_overrides = "SNET_TEAM" | "GUILD_STAFF";
 
-export interface NetworkChannel {
+export interface DBChannel {
     id: string; // The discord id of the channel
     connection_details: {
         connected_at: number; // Timestamp of when the channel was connected to the network
