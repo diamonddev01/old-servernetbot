@@ -7,6 +7,8 @@ import { DatabaseTables } from "../types/config_types";
 import { DBModeration } from "../types/database/moderation";
 import { DBGuild } from "../types/database/guild";
 import { DBBadge } from "../types/database/badge";
+import { User as DiscordUser } from "discord.js";
+import { User } from "./User";
 
 export class Database {
     private DatabasePath: string;
@@ -24,7 +26,7 @@ export class Database {
         this.DatabasePath = `../${DatabaseFile}`;
         this.Linker = defLinker;
 
-        this.users = new UserDB(this.DatabasePath, this.Linker);
+        this.users = new UserDB(this.DatabasePath, this.Linker, this.client);
         this.channels = new ChannelDB(this.DatabasePath, this.Linker);
         this.moderations = new ModerationDB(this.DatabasePath, this.Linker);
         this.guilds = new GuildDB(this.DatabasePath, this.Linker);
@@ -35,7 +37,11 @@ export class Database {
 class UserDB {
     private db: QuickDB;
     
-    constructor(dbPath: string, TableLinker: DatabaseTables) {
+    constructor(
+        dbPath: string,
+        TableLinker: DatabaseTables,
+        private client: Client
+    ) {
         this.db = new QuickDB({
             filePath: dbPath,
             table: TableLinker.users
@@ -48,6 +54,11 @@ class UserDB {
 
     set(user_data: DBUser): Promise<DBUser> {
         return this.db.set<DBUser>(user_data.id, user_data);
+    }
+
+    fromDiscord(user: DiscordUser): Promise<User> {
+        const u = new User(user);
+        return u.get(this.client);
     }
 }
 
