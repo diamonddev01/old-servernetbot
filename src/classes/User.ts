@@ -3,8 +3,9 @@ import { RawUserData } from 'discord.js/typings/rawDataTypes';
 import { Client } from './Client';
 import { createDBUser } from '../functions/createDBItems';
 import { compressDBUser } from '../functions/compressDBItems';
+import { DBUser } from '../types/database/user';
 
-export class User extends DiscordUser {
+export class User extends DiscordUser implements DBUser {
     public message_count: number = 0;
     public badges: string[] = [];
     public staff: boolean = false;
