@@ -8,7 +8,7 @@ export interface DBGuild {
     metadata?: GUILD_META_DATA;
 }
 
-interface GUILD_META_DATA {
+export interface GUILD_META_DATA {
     guild_partnership?: {
         last_application_partner?: number;
         last_application_verified?: number;
