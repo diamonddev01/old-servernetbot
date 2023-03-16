@@ -4,6 +4,7 @@ export interface DBGuild {
     subscription_status: number; // See subnotes 2
     partnership_status: number; // See subnotes 3
     moderations: string[]; // See subnotes 4
+    messages: number; // Allows the tracking of guild message numbers
     metadata?: GUILD_META_DATA;
 }
 
