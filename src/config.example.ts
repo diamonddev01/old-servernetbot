@@ -1,5 +1,5 @@
 import { DatabaseTables } from './types/config_types';
-export {Token as token} from './config.hide';
+export { Token as token } from './config.hide';
 
 // Developer Config
 export const devMode = true; // Would you like the bot to act in a specific way (intended for development of the bot)

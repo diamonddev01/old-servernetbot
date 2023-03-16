@@ -1,4 +1,4 @@
-import {User as DiscordUser} from 'discord.js';
+import { User as DiscordUser } from 'discord.js';
 import { RawUserData } from 'discord.js/typings/rawDataTypes';
 import { Client } from './Client';
 import { createDBUser } from '../functions/createDBItems';
@@ -17,7 +17,7 @@ export class User extends DiscordUser {
     public lastSaveDate: number | null = null;
 
     public fetchError?: string;
-    
+
     constructor(user: DiscordUser) {
         super(user.client, user.toJSON() as RawUserData);
     }
@@ -25,7 +25,7 @@ export class User extends DiscordUser {
     async get(client: Client): Promise<this> {
         let userdata = await client.db.users.get(this.id);
         let new_spawn = false;
-        if(!userdata) {
+        if (!userdata) {
             userdata = createDBUser(this.id);
             new_spawn = true;
         }
@@ -40,7 +40,7 @@ export class User extends DiscordUser {
         this.ready = true;
         this.lastFetchDate = Date.now();
 
-        if(new_spawn) this.save(client);
+        if (new_spawn) this.save(client);
         return this;
     }
 

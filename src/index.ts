@@ -17,7 +17,7 @@ const client = new Client({
 // Read files
 const eventFiles = readdirSync('./events/bot/').filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
-    const {event} = require(`./events/bot/${file}`);
+    const { event } = require(`./events/bot/${file}`);
     const eventName = file.split('.')[0];
     client.on(eventName, event.bind(null, client));
 }
@@ -26,12 +26,12 @@ const commandDirs = readdirSync('./commands/').filter(file => !file.includes("."
 for (const dir of commandDirs) {
     const directory = readdirSync(`./commands/${dir}`).filter(file => file.endsWith('.js'));
     for (const file of directory) {
-        const {command} = require(`./commands/${dir}/${file}`);
+        const { command } = require(`./commands/${dir}/${file}`);
         const cmd = command as Command;
         client.commands.set(cmd.name, cmd);
-        if(cmd.slashEnabled) {
+        if (cmd.slashEnabled) {
             const slashData = cmd.getSlash();
-            if(!slashData) continue;
+            if (!slashData) continue;
             client.addSlashCommand(slashData);
         }
     }

@@ -36,7 +36,7 @@ export class Database {
 
 class UserDB {
     private db: QuickDB;
-    
+
     constructor(
         dbPath: string,
         TableLinker: DatabaseTables,
@@ -83,7 +83,7 @@ class ChannelDB {
 
 class ModerationDB {
     private db: QuickDB;
-    
+
     constructor(dbPath: string, TableLinker: DatabaseTables) {
         this.db = new QuickDB({
             filePath: dbPath,
@@ -102,7 +102,7 @@ class ModerationDB {
 
 class GuildDB {
     private db: QuickDB;
-    
+
     constructor(dbPath: string, TableLinker: DatabaseTables) {
         this.db = new QuickDB({
             filePath: dbPath,
@@ -121,7 +121,7 @@ class GuildDB {
 
 class BadgeDB {
     private db: QuickDB;
-    
+
     constructor(dbPath: string, TableLinker: DatabaseTables) {
         this.db = new QuickDB({
             filePath: dbPath,

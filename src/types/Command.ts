@@ -1,4 +1,4 @@
-import {SlashCommandBuilder, Message, Interaction, CommandInteraction} from 'discord.js';
+import { SlashCommandBuilder, Message, Interaction, CommandInteraction } from 'discord.js';
 import { Client } from '../classes/Client';
 
 export type modifiedSlashCommandBuilder = SlashCommandBuilder | Omit<SlashCommandBuilder, "addSubCommand" | "addSubcommandGroup">
@@ -13,7 +13,7 @@ interface CommandConstructorBase {
     messageEnabled: boolean;
     slashEnabled: boolean;
     slashCommandData?: modifiedSlashCommandBuilder;
-    
+
     message?: (client: Client, message: Message, args: string[]) => void;
     command?: (client: Client, interaction: CommandInteraction) => void;
     interaction?: (client: Client, interaction: Interaction) => void;
