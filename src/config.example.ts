@@ -21,3 +21,6 @@ export const TableLinker: DatabaseTables = {
     guilds: "guilds",
     bagdes: "badges"
 }
+
+// Moderation Config
+export const defaultModerationLevel = 2;

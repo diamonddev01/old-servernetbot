@@ -7,8 +7,9 @@ import { DatabaseTables } from "../types/config_types";
 import { DBModeration } from "../types/database/moderation";
 import { DBGuild } from "../types/database/guild";
 import { DBBadge } from "../types/database/badge";
-import { User as DiscordUser } from "discord.js";
+import { User as DiscordUser, Guild as DiscordGuild } from "discord.js";
 import { User } from "./User";
+import { Guild } from "./Guild";
 
 export class Database {
     private DatabasePath: string;
@@ -27,7 +28,7 @@ export class Database {
         this.Linker = defLinker;
 
         this.users = new UserDB(this.DatabasePath, this.Linker, this.client);
-        this.channels = new ChannelDB(this.DatabasePath, this.Linker);
+        this.channels = new ChannelDB(this.DatabasePath, this.Linker, this.client);
         this.moderations = new ModerationDB(this.DatabasePath, this.Linker);
         this.guilds = new GuildDB(this.DatabasePath, this.Linker);
         this.badges = new BadgeDB(this.DatabasePath, this.Linker);
@@ -65,7 +66,11 @@ class UserDB {
 class ChannelDB {
     private db: QuickDB;
 
-    constructor(dbPath: string, TableLinker: DatabaseTables) {
+    constructor(
+        dbPath: string,
+        TableLinker: DatabaseTables,
+        private client: Client
+    ) {
         this.db = new QuickDB({
             filePath: dbPath,
             table: TableLinker.channels
@@ -78,6 +83,11 @@ class ChannelDB {
 
     set(channel: DBChannel): Promise<DBChannel> {
         return this.db.set<DBChannel>(channel.id, channel);
+    }
+
+    fromDiscord(guild: DiscordGuild): Promise<Guild> {
+        const g = new Guild(guild);
+        return g.get(this.client);
     }
 }
 
