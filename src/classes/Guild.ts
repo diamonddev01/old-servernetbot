@@ -11,7 +11,7 @@ interface GuildModerationData {
 }
 
 export class Guild implements DBGuild {
-    public id: string;
+    public readonly id: string;
     public channel?: string | undefined;
     public subscription_status: number = 0;
     public partnership_status: number = 0;
@@ -64,6 +64,7 @@ export class Guild implements DBGuild {
 
     async save(client: Client): Promise<this> {
         // Load this.moderationData into this.metadata.guild_moderation_status
+        if (!this.ready) return this;
         let map_deloaded: [string, boolean][] = [];
         for (const item of this.moderationData.moderation_overrides) {
             map_deloaded.push(item);

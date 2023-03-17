@@ -46,6 +46,7 @@ export class User extends DiscordUser implements DBUser {
     }
 
     async save(client: Client): Promise<this> {
+        if (!this.ready) return this;
         let compressed = compressDBUser(this);
         client.db.users.set(compressed);
         this.lastSaveDate = Date.now();

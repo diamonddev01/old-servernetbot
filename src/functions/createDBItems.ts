@@ -1,4 +1,5 @@
 import { defaultModerationLevel } from "../config";
+import { DBChannel } from "../types/database/channel";
 import { DBGuild } from "../types/database/guild";
 import { DBUser } from "../types/database/user";
 

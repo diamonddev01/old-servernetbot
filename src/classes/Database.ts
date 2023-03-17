@@ -7,9 +7,10 @@ import { DatabaseTables } from "../types/config_types";
 import { DBModeration } from "../types/database/moderation";
 import { DBGuild } from "../types/database/guild";
 import { DBBadge } from "../types/database/badge";
-import { User as DiscordUser, Guild as DiscordGuild } from "discord.js";
+import { User as DiscordUser, Guild as DiscordGuild, TextChannel } from "discord.js";
 import { User } from "./User";
 import { Guild } from "./Guild";
+import { Channel, spawnChannel } from "./Channel";
 
 export class Database {
     private DatabasePath: string;
@@ -30,7 +31,7 @@ export class Database {
         this.users = new UserDB(this.DatabasePath, this.Linker, this.client);
         this.channels = new ChannelDB(this.DatabasePath, this.Linker, this.client);
         this.moderations = new ModerationDB(this.DatabasePath, this.Linker);
-        this.guilds = new GuildDB(this.DatabasePath, this.Linker);
+        this.guilds = new GuildDB(this.DatabasePath, this.Linker, this.client);
         this.badges = new BadgeDB(this.DatabasePath, this.Linker);
     }
 }
@@ -85,9 +86,8 @@ class ChannelDB {
         return this.db.set<DBChannel>(channel.id, channel);
     }
 
-    fromDiscord(guild: DiscordGuild): Promise<Guild> {
-        const g = new Guild(guild);
-        return g.get(this.client);
+    fromDiscord(channel: TextChannel): Promise<Channel | null> {
+        return spawnChannel(channel, this.client);
     }
 }
 
@@ -113,7 +113,11 @@ class ModerationDB {
 class GuildDB {
     private db: QuickDB;
 
-    constructor(dbPath: string, TableLinker: DatabaseTables) {
+    constructor(
+        dbPath: string,
+        TableLinker: DatabaseTables,
+        private client: Client
+    ) {
         this.db = new QuickDB({
             filePath: dbPath,
             table: TableLinker.guilds
@@ -126,6 +130,11 @@ class GuildDB {
 
     set(guild: DBGuild): Promise<DBGuild> {
         return this.db.set<DBGuild>(guild.id, guild);
+    }
+
+    fromDiscord(guild: DiscordGuild): Promise<Guild> {
+        const g = new Guild(guild);
+        return g.get(this.client);
     }
 }
 

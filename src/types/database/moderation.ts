@@ -1,7 +1,7 @@
 export type DBModeration = DBWarningModeration | DBMuteModeration | DBBanModeration;
 export type ModerationTypes = "warn" | "mute" | "ban";
 
-interface DBModerationBase {
+export interface DBModerationBase {
     id: string; // The id of the moderation. This id should be user_id:timestamp_of_issue
     target: string; // The user the moderation is issued against
     issuer: string; // The user who issued the moderation
@@ -14,7 +14,7 @@ interface DBModerationBase {
 
 export interface DBWarningModeration extends DBModerationBase {
     type: "warn";
-    sub_information: null | {};
+    sub_information: {};
 }
 
 export interface DBMuteModeration extends DBModerationBase {
