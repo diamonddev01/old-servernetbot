@@ -1,5 +1,4 @@
 import { Guild as DiscordGuild } from "discord.js";
-import { RawGuildData } from "discord.js/typings/rawDataTypes";
 import { DBGuild, GUILD_META_DATA } from "../types/database/guild";
 import { Client } from "./Client";
 import { createDBGuild } from "../functions/createDBItems";
