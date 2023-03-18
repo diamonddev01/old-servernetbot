@@ -71,6 +71,13 @@ export class WarningModeration extends defaultModerationBehavior implements DBWa
 
 export class MuteModeration extends defaultModerationBehavior implements DBMuteModeration {
     type: "mute" = "mute";
+    public sub_information!: {
+        duration: number; // A time in miliseconds that the mute was issued for.
+        started_at: number; // Timestamp of when the mute started
+        expires_at: number; // Timestamp of when the mute ends/ended
+        expired_at: number;
+        active: boolean;
+    };
 
     constructor(moderation: DBMuteModeration) {
         super(moderation);
@@ -79,6 +86,11 @@ export class MuteModeration extends defaultModerationBehavior implements DBMuteM
 
 export class BanModeration extends defaultModerationBehavior implements DBBanModeration {
     type: "ban" = "ban";
+    public sub_information!: {
+        started_at: number;
+        expired_at?: number;
+        active: boolean;
+    };
 
     constructor(moderation: DBBanModeration) {
         super(moderation);
