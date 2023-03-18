@@ -1,35 +1,66 @@
 import { User as DiscordUser } from 'discord.js';
-import { RawUserData } from 'discord.js/typings/rawDataTypes';
 import { Client } from './Client';
 import { createDBUser } from '../functions/createDBItems';
 import { compressDBUser } from '../functions/compressDBItems';
 import { DBUser } from '../types/database/user';
 
-export class User extends DiscordUser implements DBUser {
-    public message_count: number = 0;
-    public badges: string[] = [];
-    public staff: boolean = false;
-    public staff_rank: number = 0;
-    public moderations: string[] = [];
-    public can_talk: boolean = false;
-    public partnership_status: number = 0;
-    public ready = false;
-    public lastFetchDate: number | null = null;
-    public lastSaveDate: number | null = null;
-
-    public fetchError?: string;
-
-    constructor(user: DiscordUser) {
-        super(user.client, user.toJSON() as RawUserData);
+export async function getUser(u: string | DiscordUser, client: Client): Promise<User | null> {
+    let user;
+    if (typeof u == "string") {
+        user = client.users.cache.get(u) || await client.users.fetch(u).catch();
+        if (!user) return null;
+    } else {
+        user = u;
     }
 
-    async get(client: Client): Promise<this> {
-        let userdata = await client.db.users.get(this.id);
-        let new_spawn = false;
-        if (!userdata) {
-            userdata = createDBUser(this.id);
-            new_spawn = true;
-        }
+    const data = await client.db.users.get(user.id);
+    if (!data) return null;
+
+    return new User(user, data, client);
+}
+
+export async function spawnUser(u: string | DiscordUser, client: Client): Promise<User | null> {
+    let user = getUser(u, client);
+    if (!user) user = newUser(typeof u == "string" ? u : u.id, client);
+    return user;
+}
+
+export async function newUser(user_id: string, client: Client): Promise<User | null> {
+    // ensure user does not exist in db
+    const db_data = await spawnUser(user_id, client);
+    if (db_data) return db_data;
+    const data = createDBUser(user_id);
+    const user = client.users.cache.get(user_id) || await client.users.fetch(user_id).catch();
+    if (!user) return null;
+    const u = new User(user, data, client);
+    u.save(); // Force a save, ensures the new User stays in db.
+    return u;
+}
+
+export class User implements DBUser {
+    public message_count!: number;
+    public badges!: string[];
+    public staff!: boolean;
+    public staff_rank!: number;
+    public moderations!: string[];
+    public can_talk!: boolean;
+    public partnership_status!: number;
+    public ready!: boolean;
+    public lastFetchDate: number | null = null;
+    public lastSaveDate: number | null = null;
+    public id: string;
+
+    constructor(
+        public user: DiscordUser,
+        data: DBUser,
+        private client: Client
+    ) {
+        this.user = user;
+        this.id = user.id;
+        this.load(data);
+    }
+
+    private load(userdata: DBUser): this {
         this.message_count = userdata.message_count;
         this.badges = userdata.badges;
         this.staff = userdata.staff;
@@ -41,15 +72,24 @@ export class User extends DiscordUser implements DBUser {
         this.ready = true;
         this.lastFetchDate = Date.now();
 
-        if (new_spawn) this.save(client);
         return this;
     }
 
-    async save(client: Client): Promise<this> {
+    public async save(): Promise<this> {
         if (!this.ready) return this;
         let compressed = compressDBUser(this);
-        client.db.users.set(compressed);
+        this.client.db.users.set(compressed);
         this.lastSaveDate = Date.now();
+        return this;
+    }
+
+    public async get(): Promise<this> {
+        const data = await this.client.db.users.get(this.id);
+        if (!data) return this;
+        this.load(data);
+
+        this.user = await this.user.fetch(false);
+
         return this;
     }
 }

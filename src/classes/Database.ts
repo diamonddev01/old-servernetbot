@@ -8,8 +8,8 @@ import { DBModeration } from "../types/database/moderation";
 import { DBGuild } from "../types/database/guild";
 import { DBBadge } from "../types/database/badge";
 import { User as DiscordUser, Guild as DiscordGuild, TextChannel } from "discord.js";
-import { User } from "./User";
-import { Guild } from "./Guild";
+import { User, spawnUser } from "./User";
+import { Guild, spawnGuild } from "./Guild";
 import { Channel, spawnChannel } from "./Channel";
 import { Badge, spawnBadge } from "./Badge";
 import { BanModeration, MuteModeration, WarningModeration, spawnModeraton } from "./Moderation";
@@ -60,9 +60,8 @@ class UserDB {
         return this.db.set<DBUser>(user_data.id, user_data);
     }
 
-    fromDiscord(user: DiscordUser): Promise<User> {
-        const u = new User(user);
-        return u.get(this.client);
+    fromDiscord(user: DiscordUser): Promise<User | null> {
+        return spawnUser(user, this.client);
     }
 }
 
@@ -142,9 +141,8 @@ class GuildDB {
         return this.db.set<DBGuild>(guild.id, guild);
     }
 
-    fromDiscord(guild: DiscordGuild): Promise<Guild> {
-        const g = new Guild(guild);
-        return g.get(this.client);
+    fromDiscord(guild: DiscordGuild): Promise<Guild | null> {
+        return spawnGuild(guild, this.client);
     }
 }
 
