@@ -21,6 +21,7 @@ export interface GUILD_META_DATA {
         moderation_level?: number;
         moderation_overrides?: [string, boolean][];
     }
+    guild_prefix?: string;
 }
 
 /*

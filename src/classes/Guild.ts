@@ -51,6 +51,7 @@ export class Guild implements DBGuild {
     public moderations!: string[];
     public messages!: number;
     public metadata!: GUILD_META_DATA;
+    public guild_prefix?: string;
 
     public lastFetchDate: null | number = null;
     public lastSaveDate: null | number = null;
@@ -75,6 +76,8 @@ export class Guild implements DBGuild {
         this.moderations = guild_data.moderations;
         this.messages = guild_data.messages;
         this.metadata = guild_data.metadata;
+
+        this.guild_prefix = this.metadata.guild_prefix;
 
         // Read moderation data
         this.moderationData = {
