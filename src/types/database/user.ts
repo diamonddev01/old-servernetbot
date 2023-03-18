@@ -7,6 +7,7 @@ export interface DBUser {
     moderations: string[]; // A list of all moderations given to a user
     can_talk: boolean; // Defaults to true. When a user is muted or banned this should be set to false.
     partnership_status: number; // See subnotes 1
+    last_message_stamp: number;
 }
 
 /*

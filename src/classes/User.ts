@@ -45,6 +45,7 @@ export class User implements DBUser {
     public moderations!: string[];
     public can_talk!: boolean;
     public partnership_status!: number;
+    public last_message_stamp!: number;
     public ready!: boolean;
     public lastFetchDate: number | null = null;
     public lastSaveDate: number | null = null;
@@ -68,6 +69,7 @@ export class User implements DBUser {
         this.moderations = userdata.moderations;
         this.can_talk = userdata.can_talk;
         this.partnership_status = userdata.partnership_status;
+        this.last_message_stamp = userdata.last_message_stamp;
 
         this.ready = true;
         this.lastFetchDate = Date.now();
