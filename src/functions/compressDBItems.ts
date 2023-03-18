@@ -1,7 +1,9 @@
+import { Badge } from "../classes/Badge";
 import { Channel } from "../classes/Channel";
 import { Guild } from "../classes/Guild";
 import { defaultModerationBehavior } from "../classes/Moderation";
 import { User } from "../classes/User";
+import { DBBadge } from "../types/database/badge";
 import { DBChannel } from "../types/database/channel";
 import { DBGuild } from "../types/database/guild";
 import { DBModeration } from "../types/database/moderation";
@@ -51,5 +53,15 @@ export function compressDBChannel(channel: Channel): DBChannel {
         connection_details: channel.connection_details,
         guild_id: channel.guild_id,
         message_count: channel.message_count
+    }
+}
+
+export function compressDBBadge(badge: Badge): DBBadge {
+    const { id, discord, self_applicable, staff_applicable_only } = badge;
+    return {
+        id,
+        discord,
+        self_applicable,
+        staff_applicable_only
     }
 }

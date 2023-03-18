@@ -11,6 +11,8 @@ import { User as DiscordUser, Guild as DiscordGuild, TextChannel } from "discord
 import { User } from "./User";
 import { Guild } from "./Guild";
 import { Channel, spawnChannel } from "./Channel";
+import { Badge, spawnBadge } from "./Badge";
+import { BanModeration, MuteModeration, WarningModeration, spawnModeraton } from "./Moderation";
 
 export class Database {
     private DatabasePath: string;
@@ -30,9 +32,9 @@ export class Database {
 
         this.users = new UserDB(this.DatabasePath, this.Linker, this.client);
         this.channels = new ChannelDB(this.DatabasePath, this.Linker, this.client);
-        this.moderations = new ModerationDB(this.DatabasePath, this.Linker);
+        this.moderations = new ModerationDB(this.DatabasePath, this.Linker, this.client);
         this.guilds = new GuildDB(this.DatabasePath, this.Linker, this.client);
-        this.badges = new BadgeDB(this.DatabasePath, this.Linker);
+        this.badges = new BadgeDB(this.DatabasePath, this.Linker, this.client);
     }
 }
 
@@ -94,7 +96,11 @@ class ChannelDB {
 class ModerationDB {
     private db: QuickDB;
 
-    constructor(dbPath: string, TableLinker: DatabaseTables) {
+    constructor(
+        dbPath: string,
+        TableLinker: DatabaseTables,
+        private client: Client
+    ) {
         this.db = new QuickDB({
             filePath: dbPath,
             table: TableLinker.moderations
@@ -107,6 +113,10 @@ class ModerationDB {
 
     set(moderation: DBModeration): Promise<DBModeration> {
         return this.db.set<DBModeration>(moderation.id, moderation);
+    }
+
+    spawn(id: string): Promise<BanModeration | MuteModeration | WarningModeration | null> {
+        return spawnModeraton(id, this.client);
     }
 }
 
@@ -141,7 +151,11 @@ class GuildDB {
 class BadgeDB {
     private db: QuickDB;
 
-    constructor(dbPath: string, TableLinker: DatabaseTables) {
+    constructor(
+        dbPath: string,
+        TableLinker: DatabaseTables,
+        private client: Client
+    ) {
         this.db = new QuickDB({
             filePath: dbPath,
             table: TableLinker.bagdes
@@ -154,5 +168,9 @@ class BadgeDB {
 
     set(badge: DBBadge): Promise<DBBadge> {
         return this.db.set<DBBadge>(badge.id, badge);
+    }
+
+    spawn(id: string): Promise<Badge | null> {
+        return spawnBadge(id, this.client);
     }
 }
