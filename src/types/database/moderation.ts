@@ -23,10 +23,16 @@ export interface DBMuteModeration extends DBModerationBase {
         duration: number; // A time in miliseconds that the mute was issued for.
         started_at: number; // Timestamp of when the mute started
         expires_at: number; // Timestamp of when the mute ends/ended
+        expired_at: number; // Timestamp of when the mute was removed or ended (appeal approved etc.)
+        active: boolean; // Is the mute still active
     }
 }
 
 export interface DBBanModeration extends DBModerationBase {
     type: "ban";
-    sub_information: null | {};
+    sub_information: {
+        started_at: number; // Timestamp of when the ban started
+        expired_at?: number; // Timestamp of when the ban was removed (appeal approved etc.)
+        active: boolean;
+    };
 }
