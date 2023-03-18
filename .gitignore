@@ -11,3 +11,6 @@ tests
 
 # Database & UserInfo
 database/db.sqlite
+
+# Visual studio code
+.vscode
