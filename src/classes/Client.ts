@@ -4,10 +4,11 @@ import { Command } from "./Command";
 import { devGuild, slashDevMode } from "../config";
 import { Database } from "./Database";
 
-export class Client extends DiscordClient {
+export class Client<Ready extends boolean = boolean> extends DiscordClient<Ready> {
     public commands: Collection<string, Command> = new Collection();
     private slashCommands: SlashCommandBuilder[] = [];
     public db: Database = new Database(this);
+    public channelIdsCache: string[] = [];
 
     constructor(options: ClientOptions) {
         super(options);

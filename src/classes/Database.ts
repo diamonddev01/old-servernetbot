@@ -35,6 +35,13 @@ export class Database {
         this.moderations = new ModerationDB(this.DatabasePath, this.Linker, this.client);
         this.guilds = new GuildDB(this.DatabasePath, this.Linker, this.client);
         this.badges = new BadgeDB(this.DatabasePath, this.Linker, this.client);
+
+        // AUTO UPDATE CACHE
+        setInterval(async (client: Client) => {
+            const channels = await client.db.channels.all();
+            const cids = channels.map((c) => c.value.id);
+            client.channelIdsCache = cids;
+        }, 30000);
     }
 }
 
@@ -89,6 +96,10 @@ class ChannelDB {
 
     fromDiscord(channel: TextChannel): Promise<Channel | null> {
         return spawnChannel(channel, this.client);
+    }
+
+    all(): Promise<{ id: string, value: DBChannel }[]> {
+        return this.db.all();
     }
 }
 
