@@ -3,6 +3,7 @@ import { Client } from './Client';
 import { createDBUser } from '../functions/createDBItems';
 import { compressDBUser } from '../functions/compressDBItems';
 import { DBUser } from '../types/database/user';
+import { BanModeration, MuteModeration, WarningModeration } from './Moderation';
 
 export async function getUser(u: string | DiscordUser, client: Client): Promise<User | null> {
     let user;
@@ -93,5 +94,16 @@ export class User implements DBUser {
         this.user = await this.user.fetch(false);
 
         return this;
+    }
+
+    public async loadModerations(): Promise<(BanModeration | MuteModeration | WarningModeration)[]> {
+        const f = [];
+        for(const mid of this.moderations) {
+            const dbmod = await this.client.db.moderations.spawn(mid);
+            if(!dbmod) continue;
+            f.push(dbmod);
+        }
+
+        return f;
     }
 }
